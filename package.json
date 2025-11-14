@@ -1,0 +1,25 @@
+{
+  "name": "clothes-size-converter",
+  "version": "1.0.0",
+  "description": "A simple package for converting global clothes sizes EU, UK, US, Asia etc",
+  "keywords": [
+    "Clothes",
+    "size",
+    "converter"
+  ],
+  "homepage": "https://github.com/MoMalley254/clothes-size-converter#readme",
+  "bugs": {
+    "url": "https://github.com/MoMalley254/clothes-size-converter/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MoMalley254/clothes-size-converter.git"
+  },
+  "license": "ISC",
+  "author": "Morris K. Njuguna",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
