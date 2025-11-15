@@ -5,7 +5,8 @@ const {
   listSizesForBrand,
   listDimensionsForSize,
   listDimensionsForSizeType,
-  listSizesFromDimensions
+  listSizesFromDimensions,
+  // mapSizeToUS
 } = require("../converters/shirts/convertShirt");
 
 //List shirt data tests
@@ -24,8 +25,11 @@ const {
 // console.log('--- listDimensionsForSize("women", "Nike", "M") ---');
 // console.log(listDimensionsForSize("women", "Nike", "M"));
 
-console.log('--- listDimensionsForSizeType("women", "Nike", "M", "bust") ---');
-console.log(listDimensionsForSizeType("women", "Nike", "M", "bust"));
+// console.log('--- listDimensionsForSizeType("men", "Nike", "L", ) ---');
+// console.log(listDimensionsForSizeType("men", "Nike", "L", ));
 
-// console.log('--- listSizesFromDimensions("women", "Nike", [{ bust: 90}, { waist: 74}, { hip: 98}]) ---');
-// console.dir(listSizesFromDimensions("women", "Nike", [{ bust: 90}, { waist: 74}, { hip: 98}]), { depth: null, color: true });
+// console.log('--- listSizesFromDimensions("men", "Nike", [{ bust: 90}, { waist: 74}, { hip: 98}]) ---');
+// console.dir(listSizesFromDimensions("men", "Nike", [{ bust: 90}, { waist: 74}, { hip: 98}]), { depth: null, color: true });
+
+// console.log('--- mapSizeToUS("men", "Nike", "L", ) ---');
+// console.dir(mapSizeToUS("men", "Nike", "L", ), { depth: null, color: true });
