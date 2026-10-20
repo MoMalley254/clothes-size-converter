@@ -37,6 +37,7 @@ const {
   listDimensionsForSize,
   listDimensionsForSizeType,
   listSizesFromDimensions,
+  mapSizeToUS,
 } = require('./src/converters/shirts/convertShirt');
 ```
 
@@ -143,6 +144,29 @@ listSizesFromDimensions("men", "Nike", [
 
 ---
 
+### `mapSizeToUS(gender, brand, size, sizeType?)`
+
+Maps a brand's size to the matching US size(s). A US size matches when every measurement the two charts share overlaps (ranges that only touch at an edge don't count). Results are ordered best match first.
+
+| Param | Type | Notes |
+|-------|------|-------|
+| `size` | string | The brand's size label, e.g. `"M"` or `"L-Tall"` |
+| `sizeType` | string \| undefined | Optional. Compare only this measurement, e.g. `"chest"` |
+
+Returns an array of `{ [usSize]: dimensions }`, an empty array if no US size matches, or an error string if the gender, brand or size isn't found.
+
+```js
+mapSizeToUS("men", "Nike", "L");
+// [
+//   { XL: { chest: [107, 112], waist: [91, 97], hip: [106, 111] } },
+//   { L:  { chest: [102, 107], waist: [86, 91], hip: [101, 106] } }
+// ]
+```
+
+> **Note:** The US reference charts are in `convertShirt.js`. The women's chart is a first pass and the men's chart has a gap between XS and S; both should be verified against a source chart.
+
+---
+
 ## Size Labels
 
 ### Men's shirts
@@ -168,7 +192,7 @@ Tall variants: `S-Tall`, `M-Tall`, `L-Tall`, `XL-Tall`, `2XL-Tall`
 
 ## Roadmap
 
-- [ ] Fix and re-enable `mapSizeToUS()` for cross-region conversion
+- [x] Fix and re-enable `mapSizeToUS()` for cross-region conversion
 - [ ] Add top-level `index.js` entry point
 - [ ] Populate men's and women's trouser data
 - [ ] Add trouser converter (`convertTrouser.js`)
