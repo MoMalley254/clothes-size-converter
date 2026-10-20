@@ -37,6 +37,7 @@ const {
   listDimensionsForSize,
   listDimensionsForSizeType,
   listSizesFromDimensions,
+  mapSizeToUS,
 } = require('./src/converters/shirts/convertShirt');
 ```
 
@@ -145,6 +146,35 @@ listSizesFromDimensions("men", "Nike", [
 
 ## Size Labels
 
+### `mapSizeToUS(gender, brand, size)`
+
+Maps a brand's size label to the closest US letter size(s) by comparing the
+brand's measurement window with a US reference window per dimension.
+
+For each US size, the overlap length is summed across every measurement the
+brand entry and the US entry share (`chest`/`waist`/`hip` for men,
+`bust`/`waist`/`hip` for women), and the US size(s) with the largest total
+overlap are returned. A brand chart that is wider than a US window therefore
+maps to the US size its measurements sit in, rather than to every window it
+touches. The result is a list because two sizes can tie — either an alias pair
+(`"XXS"`/`"2XS"` share one window) or a brand window that straddles two US
+windows evenly. Sizes outside every US window, unknown sizes, unknown genders
+and a missing size each return a descriptive string instead.
+
+```js
+mapSizeToUS("men", "Nike", "S-Tall"); // ["S"]
+mapSizeToUS("men", "Nike", "XXS");    // ["XXS", "2XS"]
+mapSizeToUS("women", "Nike", "L");    // ["L"]
+mapSizeToUS("men", "Nike", "4XL");    // "4XL (Nike, men) does not overlap any US size"
+```
+
+The US windows are approximate reference ranges in centimetres; brand charts
+can be wider or offset from them.
+
+---
+
+## Data Notes
+
 ### Men's shirts
 `XXS`, `XS`, `S`, `M`, `L`, `XL`, `XXL`, `3XL`, `4XL`  
 Tall variants: `S-Tall`, `M-Tall`, `L-Tall`, `XL-Tall`, `XXL-Tall`, `3XL-Tall`, `4XL-Tall`
@@ -168,7 +198,6 @@ Tall variants: `S-Tall`, `M-Tall`, `L-Tall`, `XL-Tall`, `2XL-Tall`
 
 ## Roadmap
 
-- [ ] Fix and re-enable `mapSizeToUS()` for cross-region conversion
 - [ ] Add top-level `index.js` entry point
 - [ ] Populate men's and women's trouser data
 - [ ] Add trouser converter (`convertTrouser.js`)

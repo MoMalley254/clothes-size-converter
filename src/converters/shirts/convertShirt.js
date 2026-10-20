@@ -1,31 +1,46 @@
 const menShirtData = require("../../data/men/shirts.json");
 const womenShirtData = require("../../data/women/shirts.json");
 
+// US letter-size reference windows, in centimetres, normalised to the same
+// shape as the brand data: { sizeLabel: { dimension: [min, max] } }.
+// The ranges are approximate reference windows; a brand's own chart can be
+// wider or offset from them. Men use chest measurements, women use bust.
+// Aliases (e.g. "XXS" / "2XS") describe the same window and both are kept so
+// either spelling can be matched.
 const usSizeLookUp = {
   men: {
-    XXS: [{ chest: [76, 81] }, { waist: [61, 66] }, { hip: [76, 81] }],
-    "2XS": [{ chest: [76, 81] }, { waist: [61, 66] }, { hip: [76, 81] }],
-    XS: [{ chest: [81, 86] }, { waist: [66, 71] }, { hip: [81, 86] }],
-    "1XS": [{ chest: [81, 86] }, { waist: [66, 71] }, { hip: [81, 86] }],
-    S: [{ chest: [91, 96] }, { waist: [76, 81] }, { hip: [91, 96] }],
-    M: [{ chest: [96, 102] }, { waist: [81, 86] }, { hip: [96, 101] }],
-    L: [{ chest: [102, 107] }, { waist: [86, 91] }, { hip: [101, 106] }],
-    XL: [{ chest: [107, 112] }, { waist: [91, 97] }, { hip: [106, 111] }],
-    "1XL": [{ chest: [107, 112] }, { waist: [91, 97] }, { hip: [106, 111] }],
-    XXL: [{ chest: [112, 117] }, { waist: [97, 102] }, { hip: [111, 116] }],
-    "2XL": [{ chest: [112, 117] }, { waist: [97, 102] }, { hip: [111, 116] }],
-    XXXL: [{ chest: [117, 122] }, { waist: [102, 107] }, { hip: [116, 121] }],
-    "3XL": [{ chest: [117, 122] }, { waist: [102, 107] }, { hip: [116, 121] }],
-    XXXXL: [{ chest: [122, 127] }, { waist: [107, 112] }, { hip: [121, 126] }],
-    "4XL": [{ chest: [122, 127] }, { waist: [107, 112] }, { hip: [121, 126] }],
-    XXXXXL: [{ chest: [127, 132] }, { waist: [112, 117] }, { hip: [126, 131] }],
-    "5XL": [{ chest: [127, 132] }, { waist: [112, 117] }, { hip: [126, 131] }],
-    XXXXXXL: [
-      { chest: [132, 137] },
-      { waist: [117, 122] },
-      { hip: [131, 136] },
-    ],
-    "6XL": [{ chest: [132, 137] }, { waist: [117, 122] }, { hip: [131, 136] }],
+    XXS: { chest: [76, 81], waist: [61, 66], hip: [76, 81] },
+    "2XS": { chest: [76, 81], waist: [61, 66], hip: [76, 81] },
+    XS: { chest: [81, 86], waist: [66, 71], hip: [81, 86] },
+    "1XS": { chest: [81, 86], waist: [66, 71], hip: [81, 86] },
+    S: { chest: [91, 96], waist: [76, 81], hip: [91, 96] },
+    M: { chest: [96, 102], waist: [81, 86], hip: [96, 101] },
+    L: { chest: [102, 107], waist: [86, 91], hip: [101, 106] },
+    XL: { chest: [107, 112], waist: [91, 97], hip: [106, 111] },
+    "1XL": { chest: [107, 112], waist: [91, 97], hip: [106, 111] },
+    XXL: { chest: [112, 117], waist: [97, 102], hip: [111, 116] },
+    "2XL": { chest: [112, 117], waist: [97, 102], hip: [111, 116] },
+    XXXL: { chest: [117, 122], waist: [102, 107], hip: [116, 121] },
+    "3XL": { chest: [117, 122], waist: [102, 107], hip: [116, 121] },
+    XXXXL: { chest: [122, 127], waist: [107, 112], hip: [121, 126] },
+    "4XL": { chest: [122, 127], waist: [107, 112], hip: [121, 126] },
+    XXXXXL: { chest: [127, 132], waist: [112, 117], hip: [126, 131] },
+    "5XL": { chest: [127, 132], waist: [112, 117], hip: [126, 131] },
+    XXXXXXL: { chest: [132, 137], waist: [117, 122], hip: [131, 136] },
+    "6XL": { chest: [132, 137], waist: [117, 122], hip: [131, 136] },
+  },
+  women: {
+    XXS: { bust: [72, 81], waist: [58, 63], hip: [82, 87] },
+    "2XS": { bust: [72, 81], waist: [58, 63], hip: [82, 87] },
+    XS: { bust: [81, 86], waist: [63, 68], hip: [86, 91] },
+    S: { bust: [86, 94], waist: [68, 74], hip: [91, 99] },
+    M: { bust: [94, 102], waist: [74, 80], hip: [99, 107] },
+    L: { bust: [102, 109], waist: [80, 87], hip: [107, 115] },
+    XL: { bust: [109, 117], waist: [87, 95], hip: [115, 123] },
+    XXL: { bust: [117, 126], waist: [95, 104], hip: [123, 132] },
+    "2XL": { bust: [117, 126], waist: [95, 104], hip: [123, 132] },
+    XXXL: { bust: [126, 135], waist: [104, 113], hip: [132, 140] },
+    "3XL": { bust: [126, 135], waist: [104, 113], hip: [132, 140] },
   },
 };
 
@@ -117,66 +132,52 @@ function listSizesFromDimensions(gender, brand, sizesType) {
   return possibleSizes;
 }
 
-// function mapSizeToUS(gender, brand, size, sizesType) {
-//   let sizeDataToUse;
-//   let possibleSize = [];
-//   if (size && !sizesType) {
-//     sizeDataToUse = listDimensionsForSize(gender, brand, size);
-//     if (!Object.keys(usSizeLookUp).includes(gender)) {
-//       return `${gender} not available in US lookup`;
-//     }
+function mapSizeToUS(gender, brand, size) {
+  // Matches a brand's size label to US letter size(s) by comparing the
+  // brand's measurement window with the US reference windows above.
+  //
+  // For each US size, the overlap length is summed across every dimension the
+  // two entries share, and the US size(s) with the largest total overlap are
+  // returned. A brand chart that is wider than a US window therefore maps to
+  // the US size its measurements sit in, rather than to every window it
+  // touches; two US sizes can still tie when a brand window straddles them
+  // evenly, and alias labels ("XL"/"1XL") always tie because they share one
+  // window, so the result is a list.
+  if (!size) return `No size provided`;
 
-//     if (!Object.keys(usSizeLookUp[gender]).includes(size)) {
-//       return `${size} not found in US lookup`;
-//     }
+  const lookup = usSizeLookUp[gender];
+  if (!lookup) return `${gender} not available in US lookup`;
 
-//     const dimensionToLookup = usSizeLookUp[gender];
+  // Validate the size against the brand's own chart, not the US lookup:
+  // labels like "S-Tall" or "2XS" exist per brand.
+  const dimensions = listDimensionsForSize(gender, brand, size);
+  if (typeof dimensions !== "object") return dimensions;
 
-//     // console.dir(`Dimensions to lookup ${JSON.stringify(dimensionToLookup)}`, {
-//     //   depth: null,
-//     //   color: true,
-//     // });
-//     console.log(`Dimensions to use ${JSON.stringify(sizeDataToUse)}`);
+  const overlapLength = (a, b) => Math.max(0, Math.min(a[1], b[1]) - Math.max(a[0], b[0]));
 
-//     Object.entries(dimensionToLookup).forEach(([sizeLabel, measurements]) => {
-//       let matchesAll = [];
-//       measurements.forEach((dimensions) => {
-//         Object.entries(dimensions).forEach(([sizeType, actualDimensions]) => {
-//           let dimensionMatches = false;
-//           const inputDimensions = sizeDataToUse[sizeType];
+  let best = 0;
+  let matches = [];
+  for (const [usLabel, usDimensions] of Object.entries(lookup)) {
+    let total = 0;
+    for (const key of Object.keys(usDimensions)) {
+      if (dimensions[key] !== undefined) {
+        total += overlapLength(dimensions[key], usDimensions[key]);
+      }
+    }
+    if (total === 0) continue;
+    if (total > best) {
+      best = total;
+      matches = [usLabel];
+    } else if (total === best) {
+      matches.push(usLabel);
+    }
+  }
 
-//           if (!inputDimensions) return;
-
-//           const [lookupMin, lookupMax] = actualDimensions;
-//           const [inputMin, inputMax] = inputDimensions;
-
-//           if (inputMin <= lookupMin && lookupMax <= inputMax) {
-//             matchesAll.push(true);
-//           } else {
-//             matchesAll.push(false);
-//           }
-//         });
-//       });
-//       if (
-//         matchesAll.every((entry) => {
-//           // return true/false based on some condition
-//           return entry.isValid;
-//         })
-//       ) {
-//         console.log(`Found match ${sizeLabel}`);
-//         possibleSize.push({ [sizeLabel]: measurements });
-//       }
-//     });
-//     // } else if (size && sizesType) {
-//     //     sizeDataToUse = listDimensionsForSize(gender, brand, size, sizesType);
-//   } else if (sizesType) {
-//     sizeDataToUse = listSizesFromDimensions(gender, brand, sizesType);
-//   } else {
-//     return `No sizes provided`;
-//   }
-
-//   return possibleSize;
-// }
+  if (matches.length === 0) {
+    return `${size} (${brand}, ${gender}) does not overlap any US size`;
+  }
+  return matches;
+}
 
 module.exports = {
   listAllData,
@@ -186,5 +187,5 @@ module.exports = {
   listDimensionsForSize,
   listDimensionsForSizeType,
   listSizesFromDimensions,
-  // mapSizeToUS,
+  mapSizeToUS,
 };
