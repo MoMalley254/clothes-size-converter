@@ -19,7 +19,8 @@
   "author": "Morris K. Njuguna",
   "type": "commonjs",
   "main": "index.js",
-  "files": ["index.js", "src/converters/", "src/data/", "README.md"],
+  "types": "index.d.ts",
+  "files": ["index.js", "index.d.ts", "src/converters/", "src/data/", "README.md"],
   "scripts": {
     "test": "node --test"
   }
