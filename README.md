@@ -29,19 +29,12 @@ npm install clothes-size-converter
 ## Usage
 
 ```js
-const {
-  listAllData,
-  listGenderData,
-  listBrands,
-  listSizesForBrand,
-  listDimensionsForSize,
-  listDimensionsForSizeType,
-  listSizesFromDimensions,
-  mapSizeToUS,
-} = require('./src/converters/shirts/convertShirt');
-```
+const { shirts } = require('clothes-size-converter');
 
-> **Note:** A top-level `index.js` entry point is on the roadmap. Until then, import directly from the converter file.
+shirts.listBrands('men');
+shirts.listSizesForBrand('men', 'Nike');
+shirts.mapSizeToUS('men', 'Nike', 'L');
+```
 
 ---
 
@@ -193,7 +186,7 @@ Tall variants: `S-Tall`, `M-Tall`, `L-Tall`, `XL-Tall`, `2XL-Tall`
 ## Roadmap
 
 - [x] Fix and re-enable `mapSizeToUS()` for cross-region conversion
-- [ ] Add top-level `index.js` entry point
+- [x] Add top-level `index.js` entry point
 - [ ] Populate men's and women's trouser data
 - [ ] Add trouser converter (`convertTrouser.js`)
 - [ ] Add more brands (H&M, Zara, Levi's)
