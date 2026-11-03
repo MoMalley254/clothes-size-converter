@@ -1,5 +1,6 @@
 const menShirtData = require("../../data/men/shirts.json");
 const womenShirtData = require("../../data/women/shirts.json");
+const lookups = require("../shared/lookups");
 
 // US reference sizes, all values in cm as [min, max].
 //
@@ -37,161 +38,23 @@ const usSizeLookUp = {
   },
 };
 
-function listAllData() {
-  return {
-    men: menShirtData,
-    women: womenShirtData,
-  };
-}
+const shirtData = {
+  men: menShirtData,
+  women: womenShirtData,
+};
 
-function listGenderData(gender) {
-  if (gender === "men") return menShirtData;
-  if (gender === "women") return womenShirtData;
-  return null;
-}
-
-function listBrands(gender) {
-  const data = listGenderData(gender);
-  if (!data) return `${gender} not found`;
-
-  return Object.keys(data);
-}
-
-function listSizesForBrand(gender, brand) {
-  const data = listGenderData(gender);
-  if (!data) return `${gender} not found`;
-
-  if (!data[brand]) {
-    return `${brand} not found in the data`;
-  }
-
-  return data[brand];
-}
-
-function listDimensionsForSize(gender, brand, size) {
-  const brandData = listSizesForBrand(gender, brand);
-
-  if (typeof brandData !== "object") return brandData;
-
-  if (!brandData[size]) {
-    return `${size} not found in the ${brand} data`;
-  }
-
-  return brandData[size];
-}
-
-function listDimensionsForSizeType(gender, brand, size, sizeType) {
-  const sizeData = listDimensionsForSize(gender, brand, size);
-
-  if (typeof sizeData !== "object") return sizeData;
-
-  //If no sizeType provided return entire dimensions
-  if (!sizeType) return sizeData;
-
-  if (!sizeData[sizeType]) {
-    return `${sizeType} not found in ${brand}, ${size} data`;
-  }
-
-  return sizeData[sizeType];
-}
-
-function listSizesFromDimensions(gender, brand, sizesType) {
-  const brandData = listSizesForBrand(gender, brand);
-  if (typeof brandData !== "object") return brandData;
-
-  const possibleSizes = [];
-
-  // Iterate over each size in the brand
-  Object.entries(brandData).forEach(([sizeLabel, measurements]) => {
-    let match = true;
-
-    sizesType.forEach((typeObj) => {
-      const [key, value] = Object.entries(typeObj)[0]; // e.g., ["bust", 90]
-
-      if (!measurements[key]) {
-        match = false; // key does not exist
-        return;
-      }
-
-      const [min, max] = measurements[key];
-      if (value < min || value > max) {
-        match = false; // value not in range
-      }
-    });
-
-    if (match) possibleSizes.push({ [sizeLabel]: measurements });
-  });
-
-  return possibleSizes;
-}
-
-// Length of the overlap between two [min, max] ranges (<= 0 means no overlap)
-function rangeOverlap([aMin, aMax], [bMin, bMax]) {
-  return Math.min(aMax, bMax) - Math.max(aMin, bMin);
-}
-
-/**
- * Map a brand's size to the matching US size(s).
- *
- * A US size matches when, for every measurement the two charts share, the
- * brand's range and the US range overlap by more than a single point
- * (ranges that merely touch at an edge do not match). Matches are ordered
- * best first, by how much of the brand's range the US range covers.
- *
- * @param {"men"|"women"} gender
- * @param {string} brand        e.g. "Nike"
- * @param {string} size         the brand's size label, e.g. "M" or "L-Tall"
- * @param {string} [sizeType]   optional: only compare this measurement,
- *                              e.g. "chest"
- * @returns {Array<Object>|string} e.g. [{ M: { chest: [96, 102], ... } }],
- *   an empty array if no US size matches, or an error string if the input
- *   is not found (same convention as the other list* functions).
- */
-function mapSizeToUS(gender, brand, size, sizeType) {
-  if (!size) return "No size provided";
-
-  const dimensions = listDimensionsForSizeType(gender, brand, size, sizeType);
-  if (typeof dimensions === "string") return dimensions;
-
-  const usSizes = usSizeLookUp[gender];
-  if (!usSizes) return `${gender} not available in US lookup`;
-
-  // With a sizeType, `dimensions` is a single [min, max] range
-  const brandDimensions = sizeType ? { [sizeType]: dimensions } : dimensions;
-
-  const matches = [];
-
-  Object.entries(usSizes).forEach(([usLabel, usDimensions]) => {
-    let matchesAll = true;
-    let coverage = 0;
-    let compared = 0;
-
-    for (const [key, brandRange] of Object.entries(brandDimensions)) {
-      const usRange = usDimensions[key];
-      if (!usRange) continue; // measurement not in the US chart
-
-      const overlap = rangeOverlap(brandRange, usRange);
-      if (overlap <= 0) {
-        matchesAll = false;
-        break;
-      }
-
-      coverage += overlap / (brandRange[1] - brandRange[0] || 1);
-      compared++;
-    }
-
-    if (matchesAll && compared > 0) {
-      matches.push({ usLabel, usDimensions, score: coverage / compared });
-    }
-  });
-
-  // Array.prototype.sort is stable, so ties keep the US chart order
-  matches.sort((a, b) => b.score - a.score);
-
-  return matches.map(({ usLabel, usDimensions }) => ({
-    [usLabel]: usDimensions,
-  }));
-}
+const listAllData = () => lookups.listAllData(shirtData);
+const listGenderData = (g) => lookups.listGenderData(shirtData, g);
+const listBrands = (g) => lookups.listBrands(shirtData, g);
+const listSizesForBrand = (g, b) => lookups.listSizesForBrand(shirtData, g, b);
+const listDimensionsForSize = (g, b, s) =>
+  lookups.listDimensionsForSize(shirtData, g, b, s);
+const listDimensionsForSizeType = (g, b, s, st) =>
+  lookups.listDimensionsForSizeType(shirtData, g, b, s, st);
+const listSizesFromDimensions = (g, b, d) =>
+  lookups.listSizesFromDimensions(shirtData, g, b, d);
+const mapSizeToUS = (g, b, s, st) =>
+  lookups.mapSizeToUS(usSizeLookUp, shirtData, g, b, s, st);
 
 module.exports = {
   listAllData,
