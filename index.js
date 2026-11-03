@@ -11,10 +11,11 @@
  *
  */
 const shirts = require("./src/converters/shirts/convertShirt");
+const trousers = require("./src/converters/trousers/convertTrouser");
 
 const converters = {
   shirts,
-  // trousers: require("./src/converters/trousers/convertTrouser"), // issue #4
+  trousers,
   // shoes:    require("./src/converters/shoes/convertShoe"),       // issue #6
   // dresses:  require("./src/converters/dresses/convertDress"),    // issue #6
 };
