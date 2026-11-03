@@ -29,11 +29,14 @@ npm install clothes-size-converter
 ## Usage
 
 ```js
-const { shirts } = require('clothes-size-converter');
+const { shirts, trousers } = require('clothes-size-converter');
 
 shirts.listBrands('men');
+trousers.listSizesForBrand('women', 'Nike');
 shirts.listSizesForBrand('men', 'Nike');
+trousers.listSizesForBrand('men', 'Nike');
 shirts.mapSizeToUS('men', 'Nike', 'L');
+trousers.mapSizeToUS('men', 'Nike', 'L');
 ```
 
 ---
@@ -56,7 +59,7 @@ if (typeof result !== 'string') {
 
 ---
 
-## API Reference — Shirts
+## API Reference — Shirts, Trousers
 
 All measurement values are in **centimetres (cm)** and represent `[min, max]` ranges.
 
@@ -68,6 +71,7 @@ Returns the full dataset for all genders.
 
 ```js
 shirts.listAllData();
+trousers.listAllData();
 // { men: { Nike: { ... }, Adidas: { ... } }, women: { ... } }
 ```
 
@@ -83,7 +87,9 @@ Returns data for a specific gender.
 
 ```js
 shirts.listGenderData("men");
+trousers.listGenderData("men");
 // { Nike: { XXS: { chest: [72, 80], ... }, ... }, Adidas: { ... } }
+//Trousers will not have chest etc, see src/data/[men/women]/trousers.json
 ```
 
 ---
@@ -94,6 +100,7 @@ Returns an array of available brand names for a gender.
 
 ```js
 shirts.listBrands("women");
+trousers.listBrands("women");
 // ["Adidas", "Nike"]
 ```
 
@@ -105,7 +112,9 @@ Returns all sizes and their measurements for a brand.
 
 ```js
 shirts.listSizesForBrand("men", "Nike");
+trousers.listSizesForBrand("men", "Nike");
 // { XXS: { chest: [72, 80], waist: [57, 65], hip: [72, 80] }, XS: { ... }, ... }
+//Trousers will not have chest etc, see src/data/[men/women]/trousers.json
 ```
 
 ---
@@ -116,7 +125,9 @@ Returns the measurement ranges for a specific size label.
 
 ```js
 shirts.listDimensionsForSize("women", "Adidas", "M");
+trousers.listDimensionsForSize("women", "Adidas", "M");
 // { bust: [89, 94], waist: [73, 78], hip: [98, 103] }
+//Trousers will not have bust etc, see src/data/[men/women]/trousers.json
 ```
 
 ---
@@ -127,14 +138,18 @@ Returns one specific measurement for a size, or all measurements if `sizeType` i
 
 | Param | Type | Example |
 |-------|------|---------|
-| `sizeType` | string \| undefined | `"chest"`, `"waist"`, `"hip"`, `"bust"` |
+| `sizeType` | string \| undefined | `"chest"`, `"waist"`, `"hip"`, `"bust"`, `"inseam"` |
 
 ```js
 shirts.listDimensionsForSizeType("men", "Nike", "L", "chest");
 // [104, 112]
+trousers.listDimensionsForSizeType("men", "Nike", "L", "hip");
+// [104, 112]
 
 shirts.listDimensionsForSizeType("men", "Nike", "L");
 // { chest: [104, 112], waist: [89, 97], hip: [104, 112] }
+trousers.listDimensionsForSizeType("men", "Nike", "L");
+// { waist: [89, 97], hip: [104, 112], inseam: [80, 82] }
 ```
 
 ---
@@ -214,7 +229,7 @@ Tall variants: `S-Tall`, `M-Tall`, `L-Tall`, `XL-Tall`, `2XL-Tall`
 - [x] Fix and re-enable `mapSizeToUS()` for cross-region conversion
 - [x] Add top-level `index.js` entry point
 - [x] Populate men's and women's trouser data
-- [ ] Add trouser converter (`convertTrouser.js`)
+- [x] Add trouser converter (`convertTrouser.js`)
 - [ ] Add more brands (H&M, Zara, Levi's)
 - [ ] Shoe and dress converters
 - [x] TypeScript type definitions
