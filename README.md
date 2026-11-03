@@ -20,7 +20,7 @@ npm install clothes-size-converter
 | Garment | Genders | Brands |
 |---------|---------|--------|
 | Shirts / Tops | Men, Women | Nike, Adidas |
-| Trousers | — | *(coming soon)* |
+| Trousers | Men, Women | Nike, Adidas |
 | Shoes | — | *(coming soon)* |
 | Dresses | — | *(coming soon)* |
 
@@ -188,6 +188,13 @@ Tall variants: `S-Tall`, `M-Tall`, `L-Tall`, `XL-Tall`, `XXL-Tall`, `3XL-Tall`, 
 `2XS`, `XS`, `S`, `M`, `L`, `XL`, `2XL`  
 Tall variants: `S-Tall`, `M-Tall`, `L-Tall`, `XL-Tall`, `2XL-Tall`
 
+### Men's trousers
+`XS`, `S`, `M`, `L`, `XL`, `XXL` (Nike); `XS`, `S`, `M`, `L`, `XL`, `2XL` (Adidas)
+
+### Women's trousers
+`XS`, `S`, `M`, `L`, `XL`, `XXL` (Nike); `XS`, `S`, `M`, `L`, `XL`, `2XL` (Adidas)
+
+
 ---
 
 ## Measurement Keys
@@ -198,6 +205,7 @@ Tall variants: `S-Tall`, `M-Tall`, `L-Tall`, `XL-Tall`, `2XL-Tall`
 | `bust` | Women's shirts | Bust circumference (cm) |
 | `waist` | All | Waist circumference (cm) |
 | `hip` | All | Hip circumference (cm) |
+| `inseam` | Trousers | Inside-leg length (cm) |
 
 ---
 
@@ -205,7 +213,7 @@ Tall variants: `S-Tall`, `M-Tall`, `L-Tall`, `XL-Tall`, `2XL-Tall`
 
 - [x] Fix and re-enable `mapSizeToUS()` for cross-region conversion
 - [x] Add top-level `index.js` entry point
-- [ ] Populate men's and women's trouser data
+- [x] Populate men's and women's trouser data
 - [ ] Add trouser converter (`convertTrouser.js`)
 - [ ] Add more brands (H&M, Zara, Levi's)
 - [ ] Shoe and dress converters
