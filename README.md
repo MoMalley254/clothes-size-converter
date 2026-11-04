@@ -19,8 +19,10 @@ npm install clothes-size-converter
 
 | Garment | Genders | Brands |
 |---------|---------|--------|
-| Shirts / Tops | Men, Women | Nike, Adidas |
-| Trousers | Men, Women | Nike, Adidas |
+| Shirts / Tops | Men | Nike, Adidas, Zara, Levi's |
+| Shirts / Tops | Women | Nike, Adidas, H&M, Zara, Levi's |
+| Trousers | Men | Nike, Adidas, Zara, Levi's |
+| Trousers | Women | Nike, Adidas, H&M, Zara, Levi's |
 | Shoes | — | *(coming soon)* |
 | Dresses | — | *(coming soon)* |
 
@@ -101,7 +103,7 @@ Returns an array of available brand names for a gender.
 ```js
 shirts.listBrands("women");
 trousers.listBrands("women");
-// ["Adidas", "Nike"]
+// ["Adidas", "Nike", "H&M", "Zara", "Levi's"]
 ```
 
 ---
@@ -204,10 +206,33 @@ Tall variants: `S-Tall`, `M-Tall`, `L-Tall`, `XL-Tall`, `XXL-Tall`, `3XL-Tall`, 
 Tall variants: `S-Tall`, `M-Tall`, `L-Tall`, `XL-Tall`, `2XL-Tall`
 
 ### Men's trousers
-`XS`, `S`, `M`, `L`, `XL`, `XXL` (Nike); `XS`, `S`, `M`, `L`, `XL`, `2XL` (Adidas)
+`XS`, `S`, `M`, `L`, `XL`, `XXL` (Nike); `XS`, `S`, `M`, `L`, `XL`, `2XL` (Adidas); `S`, `M`, `L`, `XL` (Zara); `30`, `32`, `34`, `36`, `38` (Levi's, waist in inches)
 
 ### Women's trousers
-`XS`, `S`, `M`, `L`, `XL`, `XXL` (Nike); `XS`, `S`, `M`, `L`, `XL`, `2XL` (Adidas)
+`XS`, `S`, `M`, `L`, `XL`, `XXL` (Nike); `XS`, `S`, `M`, `L`, `XL`, `2XL` (Adidas); `XS`–`3XL` (H&M); `XS`–`XL` (Zara); `XXS`–`XL` (Levi's)
+
+### Other brands (shirts)
+- Men: `S`–`XL` (Zara), `XS`–`XL` (Levi's)
+- Women: `XS`–`3XL` (H&M), `XS`–`XL` (Zara), `XXS`–`XL` (Levi's)
+
+---
+
+## Data Notes
+
+Not every brand publishes every measurement, so some charts have fewer keys than others
+(`mapSizeToUS` only compares the measurements both charts share).
+
+- **Zara** men's shirts have `chest` only; men's trousers have `waist` only.
+- **Levi's** men's shirts have `chest` and `waist` only. Men's trousers use jeans sizes
+  (waist in inches); `inseam` is `[76, 86]`, the range of lengths 30–34 in, because length is
+  chosen separately from waist.
+- **Levi's** and **Zara** women's charts publish a single body measurement per size, so the
+  `[min, max]` ranges were derived from the midpoints between neighbouring sizes.
+- Levi's men's trouser sizes 30 and 32 were extrapolated from the published 34/36/38 rows.
+- **H&M** men's charts are not included yet.
+
+These come from brand size guides and third-party aggregators and should be verified against
+the brands' own charts before relying on them.
 
 
 ---
@@ -230,7 +255,7 @@ Tall variants: `S-Tall`, `M-Tall`, `L-Tall`, `XL-Tall`, `2XL-Tall`
 - [x] Add top-level `index.js` entry point
 - [x] Populate men's and women's trouser data
 - [x] Add trouser converter (`convertTrouser.js`)
-- [ ] Add more brands (H&M, Zara, Levi's)
+- [ ] Add more brands (H&M, Zara, Levi's) — H&M men's still to do
 - [ ] Shoe and dress converters
 - [x] TypeScript type definitions
 - [ ] Full Jest test suite

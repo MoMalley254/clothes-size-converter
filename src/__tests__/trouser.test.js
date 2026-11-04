@@ -29,8 +29,14 @@ test("listGenderData returns data for a known gender and null otherwise", () => 
 });
 
 test("listBrands returns brand names and an error string for unknown gender", () => {
-  assert.deepEqual(listBrands("men").sort(), ["Adidas", "Nike"]);
-  assert.deepEqual(listBrands("women").sort(), ["Adidas", "Nike"]);
+  assert.deepEqual(listBrands("men").sort(), ["Adidas", "Levi's", "Nike", "Zara"]);
+  assert.deepEqual(listBrands("women").sort(), [
+    "Adidas",
+    "H&M",
+    "Levi's",
+    "Nike",
+    "Zara",
+  ]);
   assert.equal(listBrands("kids"), "kids not found");
 });
 
