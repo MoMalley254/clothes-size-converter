@@ -20,8 +20,36 @@
   "type": "commonjs",
   "main": "index.js",
   "types": "index.d.ts",
-  "files": ["index.js", "index.d.ts", "src/converters/", "src/data/", "README.md"],
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "src/converters/",
+    "src/data/",
+    "README.md"
+  ],
   "scripts": {
-    "test": "node --test"
+    "test": "jest",
+    "test:coverage": "jest --coverage"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "<rootDir>/src/__tests__/**/*.test.js"
+    ],
+    "collectCoverageFrom": [
+      "index.js",
+      "src/converters/**/*.js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "statements": 95,
+        "branches": 90,
+        "functions": 95,
+        "lines": 95
+      }
+    }
+  },
+  "devDependencies": {
+    "jest": "^30.5.2"
   }
 }
