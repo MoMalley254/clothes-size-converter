@@ -27,9 +27,13 @@
     "src/data/",
     "README.md"
   ],
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "test": "jest",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "test:types": "tsc -p tsconfig.json"
   },
   "jest": {
     "testEnvironment": "node",
@@ -50,6 +54,7 @@
     }
   },
   "devDependencies": {
-    "jest": "^30.5.2"
+    "jest": "^30.5.2",
+    "typescript": "^7.0.2"
   }
 }
