@@ -322,10 +322,29 @@ the brands' own charts before relying on them.
 - [ ] Add more brands (H&M, Zara, Levi's) — H&M men's still to do
 - [x] Shoe and dress converters
 - [x] TypeScript type definitions
-- [ ] Full Jest test suite
+- [x] Full Jest test suite
 - [ ] CI via GitHub Actions
 
 See [PLAN.md](./PLAN.md) for the detailed completion roadmap.
+
+---
+
+## Testing
+
+Tests use [Jest](https://jestjs.io) and live in `src/__tests__/`.
+
+```bash
+npm install
+npm test                # run the suite
+npm run test:coverage   # also print coverage and enforce the thresholds
+```
+
+- Converter tests (`shirt`, `trouser`, `dress`, `shoe`, `mapSizeToUS`) check each public function, including its error strings.
+- `lookups.test.js` tests the shared lookup module against a tiny fixture chart, so it does not depend on brand data.
+- `data.test.js` validates every JSON chart: `[min, max]` ranges in cm, allowed measurement keys per garment, and sizes ordered smallest to largest.
+- `index.test.js` checks that every garment is exported with the same API.
+
+Coverage thresholds (95% statements, lines and functions, 90% branches) are set in the `jest` block of `package.json`.
 
 ---
 
