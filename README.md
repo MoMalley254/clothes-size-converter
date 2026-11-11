@@ -333,7 +333,6 @@ the brands' own charts before relying on them.
 - [x] Full Jest test suite
 - [x] CI via GitHub Actions
 
-See [PLAN.md](./PLAN.md) for the detailed completion roadmap.
 
 ---
 
