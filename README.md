@@ -1,5 +1,7 @@
 # clothes-size-converter
 
+[![CI](https://github.com/MoMalley254/clothes-size-converter/actions/workflows/ci.yml/badge.svg)](https://github.com/MoMalley254/clothes-size-converter/actions/workflows/ci.yml)
+
 A Node.js package for looking up and converting clothing sizes across brands and regions (EU, UK, US, Asia and more).
 
 **Author:** Morris K. Njuguna  
@@ -323,7 +325,7 @@ the brands' own charts before relying on them.
 - [x] Shoe and dress converters
 - [x] TypeScript type definitions
 - [x] Full Jest test suite
-- [ ] CI via GitHub Actions
+- [x] CI via GitHub Actions
 
 See [PLAN.md](./PLAN.md) for the detailed completion roadmap.
 
@@ -345,6 +347,16 @@ npm run test:coverage   # also print coverage and enforce the thresholds
 - `index.test.js` checks that every garment is exported with the same API.
 
 Coverage thresholds (95% statements, lines and functions, 90% branches) are set in the `jest` block of `package.json`.
+
+`npm run test:types` type-checks `index.d.ts` against `types/check.ts`, including `@ts-expect-error` lines that must keep failing to compile.
+
+### Continuous integration
+
+`.github/workflows/ci.yml` runs on every push to `main` and on every pull request:
+
+- **Test**: `npm ci` then `npm run test:coverage` on Node 18, 20, 22 and 24. The coverage report from the Node 22 run is uploaded as a build artifact.
+- **Type definitions**: `npm run test:types`.
+- **CI passed**: a single summary check. Require this one in branch protection (Settings → Branches) so the Node matrix can change without editing the rule.
 
 ---
 
