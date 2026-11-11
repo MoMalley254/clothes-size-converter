@@ -16,6 +16,7 @@ describe("shirts", () => {
   test("listBrands returns brand names, or an error string for an unknown gender", () => {
     expect([...shirts.listBrands("men")].sort()).toEqual([
       "Adidas",
+      "H&M",
       "Levi's",
       "Nike",
       "Zara",
@@ -60,6 +61,42 @@ describe("shirts", () => {
     expect(shirts.listDimensionsForSizeType("men", "Nike", "L", "bust")).toBe(
       "bust not found in Nike, L data"
     );
+  });
+
+  describe("H&M men's chart (official size guide)", () => {
+    test("each letter size spans two numbered sizes, in cm", () => {
+      expect(shirts.listDimensionsForSize("men", "H&M", "M")).toEqual({
+        chest: [94, 102],
+        waist: [82, 90],
+      });
+      // XXS is a single numbered size (EUR 38)
+      expect(shirts.listDimensionsForSize("men", "H&M", "XXS")).toEqual({
+        chest: [74, 78],
+        waist: [62, 66],
+      });
+    });
+
+    test("has chest and waist only, from XXS to XXL", () => {
+      const chart = shirts.listSizesForBrand("men", "H&M");
+      expect(Object.keys(chart)).toEqual(["XXS", "XS", "S", "M", "L", "XL", "XXL"]);
+      for (const dimensions of Object.values(chart)) {
+        expect(Object.keys(dimensions)).toEqual(["chest", "waist"]);
+      }
+    });
+
+    test("neighbouring sizes meet edge to edge, with no gaps", () => {
+      const sizes = Object.values(shirts.listSizesForBrand("men", "H&M"));
+      for (let i = 1; i < sizes.length; i++) {
+        expect(sizes[i].chest[0]).toBe(sizes[i - 1].chest[1]);
+        expect(sizes[i].waist[0]).toBe(sizes[i - 1].waist[1]);
+      }
+    });
+
+    test("finds a size from body measurements and maps it to US", () => {
+      const found = shirts.listSizesFromDimensions("men", "H&M", [{ chest: 100 }, { waist: 85 }]);
+      expect(found.map((e) => Object.keys(e)[0])).toEqual(["M"]);
+      expect(shirts.mapSizeToUS("men", "H&M", "M").map((e) => Object.keys(e)[0])).toEqual(["M"]);
+    });
   });
 
   describe("listSizesFromDimensions", () => {

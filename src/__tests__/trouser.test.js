@@ -25,7 +25,13 @@ describe("trousers", () => {
   });
 
   test("listBrands returns brand names and an error string for an unknown gender", () => {
-    expect([...listBrands("men")].sort()).toEqual(["Adidas", "Levi's", "Nike", "Zara"]);
+    expect([...listBrands("men")].sort()).toEqual([
+      "Adidas",
+      "H&M",
+      "Levi's",
+      "Nike",
+      "Zara",
+    ]);
     expect([...listBrands("women")].sort()).toEqual([
       "Adidas",
       "H&M",
@@ -65,6 +71,42 @@ describe("trousers", () => {
     expect(listDimensionsForSizeType("men", "Nike", "M", "chest")).toBe(
       "chest not found in Nike, M data"
     );
+  });
+
+  describe("H&M men's chart (official size guide)", () => {
+    test("each letter size spans two numbered sizes, in cm", () => {
+      expect(listDimensionsForSize("men", "H&M", "M")).toEqual({
+        waist: [82, 90],
+        hip: [97.5, 103.5],
+      });
+      expect(listDimensionsForSize("men", "H&M", "XXL")).toEqual({
+        waist: [107.5, 116.5],
+        hip: [115.5, 121.5],
+      });
+    });
+
+    test("has waist and low hip only, from XS to XXL", () => {
+      const chart = listSizesForBrand("men", "H&M");
+      expect(Object.keys(chart)).toEqual(["XS", "S", "M", "L", "XL", "XXL"]);
+      for (const dimensions of Object.values(chart)) {
+        expect(Object.keys(dimensions)).toEqual(["waist", "hip"]);
+      }
+    });
+
+    test("neighbouring sizes meet edge to edge, with no gaps", () => {
+      const sizes = Object.values(listSizesForBrand("men", "H&M"));
+      for (let i = 1; i < sizes.length; i++) {
+        expect(sizes[i].waist[0]).toBe(sizes[i - 1].waist[1]);
+        expect(sizes[i].hip[0]).toBe(sizes[i - 1].hip[1]);
+      }
+    });
+
+    test("maps to US sizes using the measurements both charts share", () => {
+      expect(labels(mapSizeToUS("men", "H&M", "M"))).toEqual(["M", "L"]);
+      expect(labels(mapSizeToUS("men", "H&M", "XS"))).toEqual(["XS"]);
+      // H&M XXL waist (107.5+) is beyond the US chart, which ends at 102
+      expect(mapSizeToUS("men", "H&M", "XXL")).toEqual([]);
+    });
   });
 
   describe("listSizesFromDimensions", () => {
