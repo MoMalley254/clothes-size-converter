@@ -12,12 +12,14 @@
  */
 const shirts = require("./src/converters/shirts/convertShirt");
 const trousers = require("./src/converters/trousers/convertTrouser");
+const shoes = require("./src/converters/shoes/convertShoe");
+const dresses = require("./src/converters/dresses/convertDress");
 
 const converters = {
   shirts,
   trousers,
-  // shoes:    require("./src/converters/shoes/convertShoe"),       // issue #6
-  // dresses:  require("./src/converters/dresses/convertDress"),    // issue #6
+  shoes,
+  dresses,
 };
 
 module.exports = converters;
