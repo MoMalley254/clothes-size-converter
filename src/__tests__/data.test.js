@@ -73,8 +73,8 @@ describe("data files", () => {
 
   test("H&M, Zara and Levi's are covered (issue #5)", () => {
     const expected = {
-      "men/shirts": ["Zara", "Levi's"],
-      "men/trousers": ["Zara", "Levi's"],
+      "men/shirts": ["H&M", "Zara", "Levi's"],
+      "men/trousers": ["H&M", "Zara", "Levi's"],
       "women/shirts": ["H&M", "Zara", "Levi's"],
       "women/trousers": ["H&M", "Zara", "Levi's"],
     };
