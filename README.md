@@ -21,9 +21,9 @@ npm install clothes-size-converter
 
 | Garment | Genders | Brands |
 |---------|---------|--------|
-| Shirts / Tops | Men | Nike, Adidas, Zara, Levi's |
+| Shirts / Tops | Men | Nike, Adidas, H&M, Zara, Levi's |
 | Shirts / Tops | Women | Nike, Adidas, H&M, Zara, Levi's |
-| Trousers | Men | Nike, Adidas, Zara, Levi's |
+| Trousers | Men | Nike, Adidas, H&M, Zara, Levi's |
 | Trousers | Women | Nike, Adidas, H&M, Zara, Levi's |
 | Shoes | Men, Women | Nike |
 | Dresses | Women | Nike, Adidas, H&M, Zara, Levi's |
@@ -259,7 +259,7 @@ Tall variants: `S-Tall`, `M-Tall`, `L-Tall`, `XL-Tall`, `XXL-Tall`, `3XL-Tall`, 
 Tall variants: `S-Tall`, `M-Tall`, `L-Tall`, `XL-Tall`, `2XL-Tall`
 
 ### Men's trousers
-`XS`, `S`, `M`, `L`, `XL`, `XXL` (Nike); `XS`, `S`, `M`, `L`, `XL`, `2XL` (Adidas); `S`, `M`, `L`, `XL` (Zara); `30`, `32`, `34`, `36`, `38` (Levi's, waist in inches)
+`XS`, `S`, `M`, `L`, `XL`, `XXL` (Nike); `XS`, `S`, `M`, `L`, `XL`, `2XL` (Adidas); `XS`–`XXL` (H&M); `S`, `M`, `L`, `XL` (Zara); `30`, `32`, `34`, `36`, `38` (Levi's, waist in inches)
 
 ### Women's trousers
 `XS`, `S`, `M`, `L`, `XL`, `XXL` (Nike); `XS`, `S`, `M`, `L`, `XL`, `2XL` (Adidas); `XS`–`3XL` (H&M); `XS`–`XL` (Zara); `XXS`–`XL` (Levi's)
@@ -271,7 +271,7 @@ Same labels as women's shirts, without the Tall variants.
 Brand charts use EU sizes: `38.5`–`47.5` (men), `35.5`–`43` (women), in half sizes.
 
 ### Other brands (shirts)
-- Men: `S`–`XL` (Zara), `XS`–`XL` (Levi's)
+- Men: `XXS`–`XXL` (H&M), `S`–`XL` (Zara), `XS`–`XL` (Levi's)
 - Women: `XS`–`3XL` (H&M), `XS`–`XL` (Zara), `XXS`–`XL` (Levi's)
 
 ---
@@ -288,7 +288,13 @@ Not every brand publishes every measurement, so some charts have fewer keys than
 - **Levi's** and **Zara** women's charts publish a single body measurement per size, so the
   `[min, max]` ranges were derived from the midpoints between neighbouring sizes.
 - Levi's men's trouser sizes 30 and 32 were extrapolated from the published 34/36/38 rows.
-- **H&M** men's charts are not included yet.
+- **H&M** men's charts come from H&M's official men's size guide
+  (<https://th.hm.com/pages/size-guide-men>, in cm; checked November 2026). H&M sizes each
+  letter across two numbered sizes, so every range spans both (`M` covers EUR 48-50).
+  Shirts have `chest` and `waist`; trousers have `waist` and low `hip`. Inside leg is left
+  out: H&M lists one fixed length per size (76.5-81 cm) rather than a body range, and the
+  shorter ones fall below the US reference chart, which would leave XS, S and M with no US
+  match. H&M's regional guides can differ slightly.
 - **Dresses** reuse the body measurements from each brand's women's shirt chart (the
   same size guide applies); the US dress chart is the generic US women's alpha chart.
 - **Shoes**: only Nike is included. Its foot lengths are the published CM sizes ±0.25 cm.
@@ -321,7 +327,7 @@ the brands' own charts before relying on them.
 - [x] Add top-level `index.js` entry point
 - [x] Populate men's and women's trouser data
 - [x] Add trouser converter (`convertTrouser.js`)
-- [ ] Add more brands (H&M, Zara, Levi's) — H&M men's still to do
+- [x] Add more brands (H&M, Zara, Levi's)
 - [x] Shoe and dress converters
 - [x] TypeScript type definitions
 - [x] Full Jest test suite
