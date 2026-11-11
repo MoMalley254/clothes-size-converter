@@ -6,6 +6,9 @@ const dataFiles = {
   "men/trousers": require("../data/men/trousers.json"),
   "women/shirts": require("../data/women/shirts.json"),
   "women/trousers": require("../data/women/trousers.json"),
+  "women/dresses": require("../data/women/dresses.json"),
+  "men/shoes": require("../data/men/shoes.json"),
+  "women/shoes": require("../data/women/shoes.json"),
 };
 
 test("all data files parse as valid JSON", () => {
@@ -38,6 +41,9 @@ const allowedKeys = {
   "men/trousers": ["waist", "hip", "inseam"],
   "women/shirts": ["bust", "waist", "hip"],
   "women/trousers": ["waist", "hip", "inseam"],
+  "women/dresses": ["bust", "waist", "hip"],
+  "men/shoes": ["foot_length"],
+  "women/shoes": ["foot_length"],
 };
 
 test("every size only uses measurements valid for its garment and gender", () => {
