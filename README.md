@@ -23,15 +23,15 @@ npm install clothes-size-converter
 | Shirts / Tops | Women | Nike, Adidas, H&M, Zara, Levi's |
 | Trousers | Men | Nike, Adidas, Zara, Levi's |
 | Trousers | Women | Nike, Adidas, H&M, Zara, Levi's |
-| Shoes | — | *(coming soon)* |
-| Dresses | — | *(coming soon)* |
+| Shoes | Men, Women | Nike |
+| Dresses | Women | Nike, Adidas, H&M, Zara, Levi's |
 
 ---
 
 ## Usage
 
 ```js
-const { shirts, trousers } = require('clothes-size-converter');
+const { shirts, trousers, shoes, dresses } = require('clothes-size-converter');
 
 shirts.listBrands('men');
 trousers.listSizesForBrand('women', 'Nike');
@@ -39,6 +39,8 @@ shirts.listSizesForBrand('men', 'Nike');
 trousers.listSizesForBrand('men', 'Nike');
 shirts.mapSizeToUS('men', 'Nike', 'L');
 trousers.mapSizeToUS('men', 'Nike', 'L');
+dresses.mapSizeToUS('women', 'H&M', 'M');
+shoes.convertShoeSize('men', 'US', 9, 'EU'); // 42.5
 ```
 
 ---
@@ -61,7 +63,7 @@ if (typeof result !== 'string') {
 
 ---
 
-## API Reference — Shirts, Trousers
+## API Reference — Shirts, Trousers, Dresses, Shoes
 
 All measurement values are in **centimetres (cm)** and represent `[min, max]` ranges.
 
@@ -195,6 +197,55 @@ shirts.mapSizeToUS("men", "Nike", "L");
 
 ---
 
+## Shoes
+
+Shoes share the lookup functions above (`listBrands`, `listSizesForBrand`, `listSizesFromDimensions`, `mapSizeToUS`, ...) with one difference: brand charts are keyed by **EU size** (e.g. `"42.5"`) and hold a single measurement, `foot_length` in cm.
+
+```js
+shoes.listDimensionsForSize("men", "Nike", "42");
+// { foot_length: [26.25, 26.75] }
+
+shoes.listSizesFromDimensions("men", "Nike", [{ foot_length: 26.5 }]);
+// [{ "42": { foot_length: [26.25, 26.75] } }]
+
+shoes.mapSizeToUS("men", "Nike", "42");
+// [{ "9": ... }, { "9.5": ... }, { "8.5": ... }]  best match first
+```
+
+### `convertShoeSize(gender, from, size, to)`
+
+Converts between the `"EU"`, `"UK"`, `"US"` and `"Asia"` systems (names are case-insensitive). Asia is the CM/JP size, i.e. foot length in cm. Returns the converted size as a number, or an error string.
+
+```js
+shoes.convertShoeSize("men", "US", 9, "EU");     // 42.5
+shoes.convertShoeSize("women", "UK", 4.5, "US"); // 7
+shoes.convertShoeSize("men", "US", 20, "EU");    // "20 not found in US sizes for men"
+```
+
+### `listSizeChart(gender)`
+
+Returns every size in all four systems.
+
+```js
+shoes.listSizeChart("men")[0];
+// { EU: 38.5, UK: 5, US: 6, Asia: 24 }
+```
+
+---
+
+## Dresses
+
+Dresses are **women's only** and use `bust`, `waist` and `hip`. They have the same functions as shirts; `dresses.listGenderData("men")` returns `null`.
+
+```js
+dresses.listBrands("women");
+// ["Adidas", "Nike", "H&M", "Zara", "Levi's"]
+dresses.listSizesFromDimensions("women", "Adidas", [{ bust: 90 }, { waist: 74 }, { hip: 100 }]);
+// [{ M: { bust: [89, 94], waist: [73, 78], hip: [98, 103] } }]
+```
+
+---
+
 ## Size Labels
 
 ### Men's shirts
@@ -210,6 +261,12 @@ Tall variants: `S-Tall`, `M-Tall`, `L-Tall`, `XL-Tall`, `2XL-Tall`
 
 ### Women's trousers
 `XS`, `S`, `M`, `L`, `XL`, `XXL` (Nike); `XS`, `S`, `M`, `L`, `XL`, `2XL` (Adidas); `XS`–`3XL` (H&M); `XS`–`XL` (Zara); `XXS`–`XL` (Levi's)
+
+### Dresses
+Same labels as women's shirts, without the Tall variants.
+
+### Shoes
+Brand charts use EU sizes: `38.5`–`47.5` (men), `35.5`–`43` (women), in half sizes.
 
 ### Other brands (shirts)
 - Men: `S`–`XL` (Zara), `XS`–`XL` (Levi's)
@@ -230,6 +287,12 @@ Not every brand publishes every measurement, so some charts have fewer keys than
   `[min, max]` ranges were derived from the midpoints between neighbouring sizes.
 - Levi's men's trouser sizes 30 and 32 were extrapolated from the published 34/36/38 rows.
 - **H&M** men's charts are not included yet.
+- **Dresses** reuse the body measurements from each brand's women's shirt chart (the
+  same size guide applies); the US dress chart is the generic US women's alpha chart.
+- **Shoes**: only Nike is included. Its foot lengths are the published CM sizes ±0.25 cm.
+  The US reference chart assumes one US size is 1/3 inch (0.847 cm), anchored at 24.8 cm
+  for men's size 7 with women's sizes 1.5 higher, so `mapSizeToUS` can differ by a size or
+  so from a brand's own US label. UK is derived from US (men: US − 1, women: US − 2.5).
 
 These come from brand size guides and third-party aggregators and should be verified against
 the brands' own charts before relying on them.
@@ -246,6 +309,7 @@ the brands' own charts before relying on them.
 | `waist` | All | Waist circumference (cm) |
 | `hip` | All | Hip circumference (cm) |
 | `inseam` | Trousers | Inside-leg length (cm) |
+| `foot_length` | Shoes | Foot length (cm) |
 
 ---
 
@@ -256,7 +320,7 @@ the brands' own charts before relying on them.
 - [x] Populate men's and women's trouser data
 - [x] Add trouser converter (`convertTrouser.js`)
 - [ ] Add more brands (H&M, Zara, Levi's) — H&M men's still to do
-- [ ] Shoe and dress converters
+- [x] Shoe and dress converters
 - [x] TypeScript type definitions
 - [ ] Full Jest test suite
 - [ ] CI via GitHub Actions
