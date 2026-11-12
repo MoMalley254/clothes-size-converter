@@ -1,0 +1,126 @@
+name: Publish
+
+# Releases are triggered by pushing a version tag, e.g. `npm version patch`
+# followed by `git push --follow-tags`. Publishing uses npm trusted publishing
+# (OIDC): no npm token is stored anywhere. The trusted publisher is configured
+# on npmjs.com for this exact file name (publish.yml) and environment (npm).
+on:
+  push:
+    tags: ["v*.*.*"]
+
+permissions:
+  contents: read
+
+# Never run two releases at once, and never cancel one that has started.
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: Verify release
+    runs-on: ubuntu-latest
+    outputs:
+      dist_tag: ${{ steps.meta.outputs.dist_tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Tag must match the version in package.json
+        id: meta
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          VERSION="$(node -p "require('./package.json').version")"
+          if [ "v$VERSION" != "$TAG" ]; then
+            echo "::error::Tag $TAG does not match package.json version $VERSION"
+            exit 1
+          fi
+          # Versions like 1.1.0-beta.1 go to the "next" dist-tag, not "latest".
+          case "$VERSION" in
+            *-*) echo "dist_tag=next" >> "$GITHUB_OUTPUT" ;;
+            *)   echo "dist_tag=latest" >> "$GITHUB_OUTPUT" ;;
+          esac
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Tagged commit must be on main
+        run: |
+          git fetch origin main
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "::error::Tagged commit is not on main. Merge it first, then tag."
+            exit 1
+          fi
+
+      - name: Version must not already be on npm
+        env:
+          VERSION: ${{ steps.meta.outputs.version }}
+        run: |
+          if npm view "clothes-size-converter@$VERSION" version >/dev/null 2>&1; then
+            echo "::error::clothes-size-converter@$VERSION is already published"
+            exit 1
+          fi
+
+      - run: npm ci
+      - run: npm run test:coverage
+      - run: npm run test:types
+
+  publish:
+    name: Publish to npm
+    needs: verify
+    runs-on: ubuntu-latest
+    # Create an "npm" environment in the repo settings and add yourself as a
+    # required reviewer to turn this job into a one-click approval gate.
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write # lets npm exchange a short-lived OIDC token; this job only
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      # No registry-url here on purpose: setup-node would write an empty
+      # _authToken line that stops npm from using OIDC.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Use npm 11 (trusted publishing needs 11.5.1 or newer)
+        run: |
+          npm install -g npm@11
+          npm --version
+
+      # --ignore-scripts: tests already ran in the verify job, and nothing
+      # here needs dependencies installed.
+      - name: Publish
+        env:
+          DIST_TAG: ${{ needs.verify.outputs.dist_tag }}
+        run: npm publish --provenance --access public --tag "$DIST_TAG" --ignore-scripts
+
+  github-release:
+    name: GitHub release
+    needs: [verify, publish]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Create release with generated notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+          DIST_TAG: ${{ needs.verify.outputs.dist_tag }}
+        run: |
+          FLAGS=""
+          [ "$DIST_TAG" = "next" ] && FLAGS="--prerelease"
+          gh release create "$TAG" --generate-notes --verify-tag $FLAGS

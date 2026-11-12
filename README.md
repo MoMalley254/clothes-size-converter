@@ -362,6 +362,24 @@ Coverage thresholds (95% statements, lines and functions, 90% branches) are set 
 - **Test**: `npm ci` then `npm run test:coverage` on Node 18, 20, 22 and 24. The coverage report from the Node 22 run is uploaded as a build artifact.
 - **Type definitions**: `npm run test:types`.
 - **CI passed**: a single summary check. Require this one in branch protection (Settings → Branches) so the Node matrix can change without editing the rule.
+- **CI passed**: a single summary check. Require this one in branch protection (Settings → Branches) so the Node matrix can change without editing the rule.
+ or one-time code is needed. From an up-to-date `main` with a clean working tree:
+
+```bash
+npm version patch          # or minor / major; bumps package.json and creates the tag
+git push --follow-tags
+```
+
+Pushing a `v*.*.*` tag runs `.github/workflows/publish.yml`, which:
+
+1. checks that the tag matches `package.json`, that the commit is on `main`, and that the version is not already on npm;
+2. runs the tests and the type check;
+3. publishes to npm with provenance (after approval, if the `npm` environment has required reviewers);
+4. creates a GitHub release with generated notes.
+
+A version with a suffix, such as `1.1.0-beta.1`, is published under the `next` dist-tag and marked as a pre-release, so `npm install` keeps resolving to the last stable version.
+
+One-time setup: on npmjs.com, open the package → Settings → Trusted Publisher → GitHub Actions, and enter user `MoMalley254`, repository `clothes-size-converter`, workflow `publish.yml` and environment `npm`.
 
 ---
 
